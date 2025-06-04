@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-14-deployment
+  labels:
+    app: cluster-14
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-14
+  template:
+    metadata:
+      labels:
+        app: cluster-14
+    spec:
+      containers:
+        - name: user_service
+          image: user_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+        - name: analytics_service
+          image: analytics_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8086
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-4-deployment
+  labels:
+    app: cluster-4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-4
+  template:
+    metadata:
+      labels:
+        app: cluster-4
+    spec:
+      containers:
+        - name: issuemanaging-service
+          image: issuemanaging-service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+        - name: watchdog
+          image: watchdog
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: Helm chart for cluster-5 application
+name: cluster-5
+version: 1.0.0

@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-2-deployment
+  labels:
+    app: cluster-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-2
+  template:
+    metadata:
+      labels:
+        app: cluster-2
+    spec:
+      containers:
+        - name: user_client
+          image: user_client
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+        - name: notification_service
+          image: notification_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8087
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

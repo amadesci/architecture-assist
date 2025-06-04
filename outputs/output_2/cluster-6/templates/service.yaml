@@ -1,0 +1,20 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-6-service
+  labels:
+    app: cluster-6
+spec:
+  selector:
+    app: cluster-6
+  ports:
+    - protocol: TCP
+      port: 8082
+      name: tcp-port-1
+      targetPort: 8082
+    - protocol: TCP
+      port: 8083
+      name: tcp-port-2
+      targetPort: 8083
+  type: ClusterIP

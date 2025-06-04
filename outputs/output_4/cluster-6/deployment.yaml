@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-6-deployment
+  labels:
+    app: cluster-6
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-6
+  template:
+    metadata:
+      labels:
+        app: cluster-6
+    spec:
+      containers:
+        - name: user-auth
+          image: user-auth
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+        - name: user-client
+          image: user-client
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

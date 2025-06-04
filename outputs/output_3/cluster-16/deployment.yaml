@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-16-deployment
+  labels:
+    app: cluster-16
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-16
+  template:
+    metadata:
+      labels:
+        app: cluster-16
+    spec:
+      containers:
+        - name: order_service
+          image: order_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+        - name: analytics_service
+          image: analytics_service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8086
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

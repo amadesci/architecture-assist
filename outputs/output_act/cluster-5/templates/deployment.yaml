@@ -1,0 +1,46 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-5-deployment
+  labels:
+    app: cluster-5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-5
+  template:
+    metadata:
+      labels:
+        app: cluster-5
+    spec:
+      containers:
+        - name: user-client
+          image: user-client
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+        - name: user-client
+          image: user-client
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+        - name: user-service
+          image: user-service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+        - name: watchdog
+          image: watchdog
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+        - name: api-gateway
+          image: "your-api-gateway-image:latest"
+          ports:
+            - containerPort: 8080
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379

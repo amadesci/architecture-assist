@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-9-deployment
+  labels:
+    app: cluster-9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-9
+  template:
+    metadata:
+      labels:
+        app: cluster-9
+    spec:
+      containers:
+        - name: user_auth
+          image: user_auth
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+        - name: issuemanaging_auth
+          image: issuemanaging_auth
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8085
+        - name: redis-cache
+          image: "redis:6-alpine"
+          ports:
+            - containerPort: 6379
