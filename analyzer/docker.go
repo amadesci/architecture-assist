@@ -10,7 +10,8 @@ import (
 	"strings"
 )
 
-// ParseDockerfile анализирует Dockerfile для выявления ключевых характеристик
+// ParseDockerfile identifies key charachteristics of Dockerfile.
+// Returns MicroserviceInfo and err=nil if parse is successful.
 func ParseDockerfile(path string) (MicroserviceInfo, error) {
 	info := MicroserviceInfo{
 		Name:       filepath.Base(filepath.Dir(path)),
@@ -46,7 +47,6 @@ func ParseDockerfile(path string) (MicroserviceInfo, error) {
 		}
 	}
 
-	// Определяем общие ресурсы по переменным окружения
 	info.detectSharedResources()
 
 	return info, scanner.Err()
@@ -63,7 +63,6 @@ func (mi *MicroserviceInfo) processExpose(args []string) {
 
 func (mi *MicroserviceInfo) processEnv(args []string) {
 	if len(args) >= 2 {
-		// Объединяем все аргументы после первого как значение
 		value := strings.Join(args[1:], " ")
 		mi.EnvVariables = append(mi.EnvVariables, args[0]+"="+value)
 	}
@@ -72,7 +71,6 @@ func (mi *MicroserviceInfo) processEnv(args []string) {
 func (mi *MicroserviceInfo) detectSharedResources() {
 	dbPrefixes := make(map[string]map[string]string)
 
-	// Сбор сырых данных из переменных окружения
 	for _, env := range mi.EnvVariables {
 		parts := strings.SplitN(env, "=", 2)
 		if len(parts) != 2 {
@@ -85,7 +83,6 @@ func (mi *MicroserviceInfo) detectSharedResources() {
 			continue
 		}
 
-		// Обработка БД: TYPE_HOST, TYPE_PORT
 		if strings.HasSuffix(key, "_HOST") {
 			dbType := strings.ToLower(strings.TrimSuffix(key, "_HOST"))
 			if dbPrefixes[dbType] == nil {
@@ -103,7 +100,6 @@ func (mi *MicroserviceInfo) detectSharedResources() {
 		}
 	}
 
-	// Формирование подключений к БД
 	for dbType, data := range dbPrefixes {
 		if data["host"] == "" {
 			continue
@@ -114,7 +110,6 @@ func (mi *MicroserviceInfo) detectSharedResources() {
 			port = p
 		}
 
-		// Определение порта по умолчанию
 		if port == 0 {
 			switch dbType {
 			case "postgres":
@@ -130,9 +125,4 @@ func (mi *MicroserviceInfo) detectSharedResources() {
 			Port: port,
 		})
 	}
-
-	// Формирование списка кэшей
-	// for cacheType := range cacheTypes {
-	// 	mi.SharedCache = append(mi.SharedCache, cacheType)
-	// }
 }

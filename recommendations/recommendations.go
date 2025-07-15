@@ -7,7 +7,6 @@ func generateRecommendations(clusters []ServiceCluster, env string) []Recommenda
 	var recs []Recommendation
 
 	for _, cluster := range clusters {
-		// Рекомендация API Gateway
 		if len(cluster.Services) >= 3 {
 			recs = append(recs, Recommendation{
 				Type:        "api-gateway",
@@ -17,7 +16,6 @@ func generateRecommendations(clusters []ServiceCluster, env string) []Recommenda
 			})
 		}
 
-		// Рекомендация кэша
 		if len(cluster.SharedDBs) > 0 && len(cluster.Services) > 1 {
 			recs = append(recs, Recommendation{
 				Type:        "cache",

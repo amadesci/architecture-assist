@@ -11,18 +11,17 @@ import (
 	"diploma/recommendations"
 )
 
-// ChartConfig содержит данные для генерации Helm чарта
-
+// A ChartConfig represents values for chart generation.
 type ChartConfig struct {
 	Cluster         recommendations.ServiceCluster
-	ImageMap        map[string]string // сервис -> Docker образ
-	PortMap         map[string][]int  // сервис -> порты
-	ReplicaCount    int               // кол-во реплик кластера
+	ImageMap        map[string]string // service -> Docker image
+	PortMap         map[string][]int  // service -> ports
+	ReplicaCount    int               // amount of replicas
 	Recommendations []recommendations.Recommendation
-	OutputDir       string // куда генерировать чарт
+	OutputDir       string // chart generation directory
 }
 
-// Шаблон Deployment.yaml с поддержкой нескольких контейнеров
+// A template for Deployment.yaml with multiple containers surropt.
 const deploymentTemplate = `
 apiVersion: apps/v1
 kind: Deployment
@@ -64,7 +63,7 @@ spec:
 {{- end }}
 `
 
-// Шаблон Service.yaml для доступа к Deployment
+// A template for Service.yaml to access k8s' Deployment
 const serviceTemplate = `
 apiVersion: v1
 kind: Service
@@ -86,7 +85,6 @@ spec:
   type: ClusterIP
 `
 
-// Создание конфигурации чарта с определением количества реплик и признаков API Gateway и кэша
 func createChartConfig(cluster recommendations.ServiceCluster, images map[string]string, ports map[string][]int, outputDir string) ChartConfig {
 	replicaCount := 1
 	if cluster.Env == "prod" {
@@ -105,7 +103,7 @@ func createChartConfig(cluster recommendations.ServiceCluster, images map[string
 	}
 }
 
-// Проверка, есть ли в рекомендациях API Gateway
+// HasApiGateway checks for an API Gateway integration recommendation.
 func (c ChartConfig) HasApiGateway() bool {
 	for _, rec := range c.Recommendations {
 		if rec.Type == "api-gateway" {
@@ -115,7 +113,7 @@ func (c ChartConfig) HasApiGateway() bool {
 	return false
 }
 
-// Проверка, есть ли в рекомендациях кэш
+// HasCache checks for a Redis cache integration recommendation.
 func (c ChartConfig) HasCache() bool {
 	for _, rec := range c.Recommendations {
 		if rec.Type == "cache" {
@@ -125,8 +123,12 @@ func (c ChartConfig) HasCache() bool {
 	return false
 }
 
-// Основная функция генерации Helm чартов для всех кластеров
-func GenerateHelmCharts(clusters []recommendations.ServiceCluster, images map[string]string, ports map[string][]int, outputBaseDir string) error {
+// GenerateHelmCharts generates charts for each cluster.
+func GenerateHelmCharts(
+	clusters []recommendations.ServiceCluster,
+	images map[string]string,
+	ports map[string][]int,
+	outputBaseDir string) error {
 	for _, cluster := range clusters {
 		chartDir := filepath.Join(outputBaseDir, cluster.Name)
 		err := os.MkdirAll(chartDir, os.ModePerm)
@@ -149,7 +151,6 @@ func GenerateHelmCharts(clusters []recommendations.ServiceCluster, images map[st
 	return nil
 }
 
-// Генерация Deployment.yaml из шаблона
 func generateDeploymentYaml(config ChartConfig) error {
 	tpl, err := template.New("deployment").Parse(deploymentTemplate)
 	if err != nil {
@@ -164,7 +165,6 @@ func generateDeploymentYaml(config ChartConfig) error {
 	return os.WriteFile(filePath, buf.Bytes(), 0644)
 }
 
-// Генерация Service.yaml из шаблона
 func generateServiceYaml(config ChartConfig) error {
 	tpl, err := template.New("service").Parse(serviceTemplate)
 	if err != nil {
